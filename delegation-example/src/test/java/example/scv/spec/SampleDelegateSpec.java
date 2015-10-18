@@ -5,6 +5,7 @@ import com.truward.scv.contrib.plugin.delegation.api.binding.DelegationTarget;
 import com.truward.scv.contrib.plugin.delegation.api.binding.MultipleDelegationTargets;
 import com.truward.scv.specification.Specification;
 import com.truward.scv.specification.Target;
+import example.scv.aspect.LoggingAspect;
 import example.scv.service.BarService;
 import example.scv.service.BazService;
 import example.scv.service.FooService;
@@ -31,10 +32,12 @@ public class SampleDelegateSpec extends DelegationSpecifierSupport {
 
   @Specification
   public void barAndBazDelegates() {
+    // Create multiple delegates for both BarService and BazService as static inner classes of BarAndBazDelegates
     final MultipleDelegationTargets targets = create(Target.fromClassName("example.scv.service.BarAndBazDelegates"),
         BarService.class, BazService.class);
 
-    // When any method invoked - throw an exception
-    targets.throwException(UnsupportedOperationException.class).forAllMethods();
+    // When any method invoked - just delegate the call
+    targets.delegateCall().forAllMethods();
+    targets.bindAspect(LoggingAspect.class).forAllMethods();
   }
 }

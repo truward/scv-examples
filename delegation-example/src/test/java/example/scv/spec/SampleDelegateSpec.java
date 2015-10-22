@@ -1,10 +1,11 @@
 package example.scv.spec;
 
 import com.truward.scv.contrib.plugin.delegation.api.DelegationSpecifierSupport;
-import com.truward.scv.contrib.plugin.delegation.api.binding.DelegationTarget;
-import com.truward.scv.contrib.plugin.delegation.api.binding.MultipleDelegationTargets;
-import com.truward.scv.specification.Specification;
-import com.truward.scv.specification.Target;
+import com.truward.scv.contrib.plugin.delegation.api.binding.ClassDelegationAction;
+import com.truward.scv.contrib.plugin.delegation.api.binding.MultipleDelegationActions;
+import com.truward.scv.specification.annotation.Specification;
+import com.truward.scv.specification.annotation.TargetMapping;
+import com.truward.scv.specification.annotation.TargetMappingEntry;
 import example.scv.aspect.LoggingAspect;
 import example.scv.service.BarService;
 import example.scv.service.BazService;
@@ -15,13 +16,17 @@ import static com.truward.scv.specification.Parameters.any;
 /**
  * @author Alexander Shabanov
  */
+@TargetMapping({
+    @TargetMappingEntry(source = FooService.class, targetClassName = "example.scv.service.FooServiceDelegate"),
+    @TargetMappingEntry(source = {BarService.class, BazService.class},
+        targetClassName = "example.scv.service.BarAndBazDelegates")
+})
 public class SampleDelegateSpec extends DelegationSpecifierSupport {
 
   @Specification
   public void fooDelegate() {
     // Create delegate for FooService
-    final DelegationTarget<FooService> target = create(Target.fromClassName("example.scv.service.FooServiceDelegate"),
-        FooService.class);
+    final ClassDelegationAction<FooService> target = forClass(FooService.class);
 
     // When any method invoked - throw UnsupportedOperationException
     target.throwException(UnsupportedOperationException.class).forAllMethods();
@@ -33,8 +38,7 @@ public class SampleDelegateSpec extends DelegationSpecifierSupport {
   @Specification
   public void barAndBazDelegates() {
     // Create multiple delegates for both BarService and BazService as static inner classes of BarAndBazDelegates
-    final MultipleDelegationTargets targets = create(Target.fromClassName("example.scv.service.BarAndBazDelegates"),
-        BarService.class, BazService.class);
+    final MultipleDelegationActions targets = forClasses(BarService.class, BazService.class);
 
     // When any method invoked - just delegate the call
     targets.delegateCall().forAllMethods();

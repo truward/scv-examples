@@ -17,9 +17,9 @@ import static com.truward.scv.specification.Parameters.any;
  * @author Alexander Shabanov
  */
 @TargetMapping({
-    @TargetMappingEntry(source = FooService.class, targetClassName = "example.scv.service.FooServiceDelegate"),
+    @TargetMappingEntry(source = FooService.class, targetName = "example.scv.service.FooServiceDelegate"),
     @TargetMappingEntry(source = {BarService.class, BazService.class},
-        targetClassName = "example.scv.service.BarAndBazDelegates")
+        targetName = "example.scv.service.BarAndBazDelegates")
 })
 public class SampleDelegateSpec extends DelegationSpecifierSupport {
 
